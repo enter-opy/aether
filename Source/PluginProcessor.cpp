@@ -131,27 +131,30 @@ void AetherAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce:
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
-    // In case we have more outputs than inputs, this code clears any output
-    // channels that didn't contain input data, (because these aren't
-    // guaranteed to be empty - they may contain garbage).
-    // This is here to avoid people getting screaming feedback
-    // when they first compile a plugin, but obviously you don't need to keep
-    // this code if your algorithm always overwrites all the output channels.
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-    // This is the place where you'd normally do the guts of your plugin's
-    // audio processing...
-    // Make sure to reset the state if your inner loop is processing
-    // the samples and the outer loop is handling the channels.
-    // Alternatively, you can process the samples with the channels
-    // interleaved by keeping the same state.
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {
-        auto* channelData = buffer.getWritePointer (channel);
+    panValue[0] = (*apvts.getRawParameterValue("leftChannelPan") + 1.0f) / 2.0f;
+    gainValue[0] = juce::Decibels::decibelsToGain((float)*apvts.getRawParameterValue("leftChannelGain"));
+    panValue[1] = (*apvts.getRawParameterValue("rightChannelPan") + 1.0f) / 2.0f;
+    gainValue[1] = juce::Decibels::decibelsToGain((float)*apvts.getRawParameterValue("rightChannelGain"));
 
-        // ..do something to the data...
-    }
+    for (int sample = 0; sample < buffer.getNumSamples(); sample++) {
+        // Apply gain to each channel
+		buffer.setSample(0, sample, buffer.getSample(0, sample) * gainValue[0]);
+		buffer.setSample(1, sample, buffer.getSample(1, sample) * gainValue[1]);
+
+        // Get current samples
+        currSample[0] = buffer.getSample(0, sample);
+        currSample[1] = buffer.getSample(1, sample);
+
+        // Apply panning to each channel
+        buffer.setSample(0, sample, currSample[0] * (1.0f - panValue[0]));
+        buffer.setSample(1, sample, currSample[1] * (panValue[1]));
+
+        buffer.addSample(1, sample, currSample[0] * panValue[0]);
+        buffer.addSample(0, sample, currSample[1] * (1.0f - panValue[1]));
+	}
 }
 
 //==============================================================================

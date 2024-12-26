@@ -59,6 +59,10 @@ public:
 
 private:
     //==============================================================================
+    float panValue[2];
+    float gainValue[2];
+
+    float currSample[2];
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AetherAudioProcessor)
 };

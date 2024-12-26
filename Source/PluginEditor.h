@@ -36,22 +36,17 @@ private:
 
     juce::Rectangle<float> xyPad;
 
-    juce::Point<float> leftChannelThumbPos;
-    juce::Point<float> rightChannelThumbPos;
-    float radius = 10.0f;
+    juce::Point<float> thumbPos[2];
+    float thumbRadius = 10.0f;
     int draggedThumb = false;
 
-    juce::Slider leftChannelPanSlider;
-    juce::Slider leftChannelGainSlider;
-    juce::Slider rightChannelPanSlider;
-    juce::Slider rightChannelGainSlider;
+    juce::Slider panSlider[2];
+    juce::Slider gainSlider[2];
+
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> panAttachment[2];
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainAttachment[2];
 
     juce::Typeface::Ptr customTypeface = juce::Typeface::createSystemTypefaceFor(BinaryData::DotGothic16Regular_ttf, BinaryData::DotGothic16Regular_ttfSize);
-
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> leftChannelPanAttachment;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> leftChannelGainAttachment;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> rightChannelPanAttachment;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> rightChannelGainAttachment;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AetherAudioProcessorEditor)
 };
