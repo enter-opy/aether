@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="gdTasD" name="Aether" projectType="audioplug" useAppConfig="0"
-              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1">
+              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" companyName="final out">
   <MAINGROUP id="OAVefn" name="Aether">
     <GROUP id="{B470D21F-4EF3-15CF-8549-9F5E98A51C9B}" name="Source">
       <GROUP id="{E4B8E88F-2A71-39E3-3A62-0E092F09F327}" name="Assets">
