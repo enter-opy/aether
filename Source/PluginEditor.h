@@ -14,7 +14,8 @@
 //==============================================================================
 /**
 */
-class AetherAudioProcessorEditor  : public juce::AudioProcessorEditor
+class AetherAudioProcessorEditor  : public juce::AudioProcessorEditor,
+    public juce::Slider::Listener
 {
 public:
     AetherAudioProcessorEditor (AetherAudioProcessor&);
@@ -26,6 +27,11 @@ public:
 
     void mouseDown(const juce::MouseEvent& event) override;
     void mouseDrag(const juce::MouseEvent& event) override;
+
+    //void sliderDragStarted(juce::Slider* slider) override;
+    //void sliderDragEnded(juce::Slider* slider) override;
+
+    void sliderValueChanged(juce::Slider* slider) override;
 
 private:
     // This reference is provided as a quick way for your editor to

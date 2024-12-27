@@ -16,43 +16,37 @@ AetherAudioProcessorEditor::AetherAudioProcessorEditor (AetherAudioProcessor& p)
     setSize (420, 500);
 
 
-    // Sliders
+    // Slider attachments
     panAttachment[0] = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "leftChannelPan", panSlider[0]);
     gainAttachment[0] = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "leftChannelGain", gainSlider[0]);
     panAttachment[1] = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "rightChannelPan", panSlider[1]);
     gainAttachment[1] = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "rightChannelGain", gainSlider[1]);
 
-    panSlider[0].setSliderStyle(juce::Slider::RotaryVerticalDrag);
-    panSlider[0].setRange(-1.0f, 1.0f, 0.01f);
+    // Set slider properties
+    for (int i = 0; i < 2; ++i)
+    {
+        panSlider[i].setSliderStyle(juce::Slider::RotaryVerticalDrag);
+        panSlider[i].setRange(-1.0f, 1.0f, 0.01f);
+        panSlider[i].setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
+        panSlider[i].addListener(this);
+        addAndMakeVisible(&panSlider[i]);
+        panSlider[i].setEnabled(false);
+        panSlider[i].setVisible(false);
+
+        gainSlider[i].setSliderStyle(juce::Slider::RotaryVerticalDrag);
+        gainSlider[i].setRange(-20.0f, 20.0f, 0.01f);
+        gainSlider[i].setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
+        gainSlider[i].addListener(this);
+        addAndMakeVisible(&gainSlider[i]);
+        gainSlider[i].setEnabled(false);
+        gainSlider[i].setVisible(false);
+    }
+
+    // Update slider values from apvts
     panSlider[0].setValue(audioProcessor.apvts.getRawParameterValue("leftChannelPan")->load());
-    panSlider[0].setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
-    addAndMakeVisible(&panSlider[0]);
-    panSlider[0].setEnabled(false);
-    panSlider[0].setVisible(false);
-
-    gainSlider[0].setSliderStyle(juce::Slider::RotaryVerticalDrag);
-    gainSlider[0].setRange(-20.0f, 20.0f, 0.01f);
     gainSlider[0].setValue(audioProcessor.apvts.getRawParameterValue("leftChannelGain")->load());
-    gainSlider[0].setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
-    addAndMakeVisible(&gainSlider[0]);
-    gainSlider[0].setEnabled(false);
-    gainSlider[0].setVisible(false);
-
-    panSlider[1].setSliderStyle(juce::Slider::RotaryVerticalDrag);
-    panSlider[1].setRange(-1.0f, 1.0f, 0.01f);
     panSlider[1].setValue(audioProcessor.apvts.getRawParameterValue("rightChannelPan")->load());
-    panSlider[1].setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
-    addAndMakeVisible(&panSlider[1]);
-    panSlider[1].setEnabled(false);
-    panSlider[1].setVisible(false);
-
-    gainSlider[1].setSliderStyle(juce::Slider::RotaryVerticalDrag);
-    gainSlider[1].setRange(-20.0f, 20.0f, 0.01f);
     gainSlider[1].setValue(audioProcessor.apvts.getRawParameterValue("rightChannelGain")->load());
-    gainSlider[1].setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
-    addAndMakeVisible(&gainSlider[1]);
-    gainSlider[1].setEnabled(false);
-    gainSlider[1].setVisible(false);
 }
 
 AetherAudioProcessorEditor::~AetherAudioProcessorEditor()
@@ -65,7 +59,7 @@ void AetherAudioProcessorEditor::paint (juce::Graphics& g)
     g.setColour(juce::Colour::fromRGB(0x1D, 0x0E, 0x0E));
     g.fillAll();
 
-    // Draw logo on top left
+    // Draw company logo
     g.drawImage(companyLogo, 15, 25, 49.5, 45, 0, 0, companyLogo.getWidth(), companyLogo.getHeight());
 
     // Draw title
@@ -157,4 +151,22 @@ void AetherAudioProcessorEditor::mouseDrag(const juce::MouseEvent& event)
 
         repaint();
     }
+}
+
+void AetherAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)
+{
+	if (slider == &panSlider[0]) {
+		thumbPos[0].x = juce::jmap<float>(panSlider[0].getValue(), panSlider[0].getMinimum(), panSlider[0].getMaximum(), xyPad.getX() + thumbRadius, xyPad.getRight() - thumbRadius);
+	}
+    else if (slider == &gainSlider[0]) {
+        thumbPos[0].y = juce::jmap<float>(gainSlider[0].getValue(), gainSlider[0].getMaximum(), gainSlider[0].getMinimum(), xyPad.getY() + thumbRadius, xyPad.getBottom() - thumbRadius);
+    }
+    else if (slider == &panSlider[1]) {
+		thumbPos[1].x = juce::jmap<float>(panSlider[1].getValue(), panSlider[1].getMinimum(), panSlider[1].getMaximum(), xyPad.getX() + thumbRadius, xyPad.getRight() - thumbRadius);
+	}
+	else if (slider == &gainSlider[1]) {
+		thumbPos[1].y = juce::jmap<float>(gainSlider[1].getValue(), gainSlider[1].getMaximum(), gainSlider[1].getMinimum(), xyPad.getY() + thumbRadius, xyPad.getBottom() - thumbRadius);
+	}
+
+    repaint();
 }
